@@ -1,0 +1,787 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Sarabun',sans-serif;background:#F0F7FF;font-size:14px;min-height:600px}
+
+/* ─── LOGIN PAGE ─── */
+#loginPage{display:flex;align-items:center;justify-content:center;min-height:600px;background:linear-gradient(135deg,#0D47A1 0%,#1976D2 50%,#42A5F5 100%)}
+.login-card{background:#fff;border-radius:20px;padding:36px 32px;width:340px;box-shadow:0 20px 60px rgba(13,71,161,.35)}
+.login-logo{text-align:center;margin-bottom:24px}
+.login-logo-icon{width:64px;height:64px;background:linear-gradient(135deg,#1565C0,#42A5F5);border-radius:16px;display:flex;align-items:center;justify-content:center;margin:0 auto 10px}
+.login-title{font-size:18px;font-weight:700;color:#1565C0;margin-bottom:2px}
+.login-sub{font-size:12px;color:#90A4AE}
+.login-group{margin-bottom:14px}
+.login-group label{font-size:12px;font-weight:600;color:#5C7A8A;display:block;margin-bottom:5px}
+.login-group input{width:100%;padding:10px 13px;border:1.5px solid #BBDEFB;border-radius:10px;font-size:13px;font-family:'Sarabun',sans-serif;color:#1A237E;outline:none;transition:border-color .15s}
+.login-group input:focus{border-color:#1976D2;box-shadow:0 0 0 3px rgba(33,150,243,.12)}
+.login-btn{width:100%;padding:11px;background:linear-gradient(135deg,#1565C0,#1976D2);color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:600;font-family:'Sarabun',sans-serif;cursor:pointer;transition:all .2s;margin-top:6px}
+.login-btn:hover{background:linear-gradient(135deg,#0D47A1,#1565C0);box-shadow:0 4px 14px rgba(21,101,192,.4)}
+.login-err{background:#FFEBEE;color:#C62828;border:1px solid #FFCDD2;border-radius:8px;padding:8px 12px;font-size:12px;margin-top:10px;display:none;text-align:center}
+.login-loading{text-align:center;padding:10px;font-size:12px;color:#90A4AE;display:none}
+
+/* ─── APP ─── */
+#appPage{display:none;min-height:600px}
+.app-wrap{display:flex;min-height:600px}
+#sidebar{width:220px;background:#fff;border-right:1px solid #BBDEFB;display:flex;flex-direction:column;flex-shrink:0;position:sticky;top:0;height:600px;overflow-y:auto;box-shadow:2px 0 8px rgba(21,101,192,.06)}
+.sb-header{padding:14px 16px;background:linear-gradient(135deg,#1565C0,#1976D2)}
+.sb-logo{font-size:13px;font-weight:600;color:#fff;line-height:1.4}
+.sb-sub{font-size:10px;color:#BBDEFB;margin-top:2px}
+.sb-user{display:flex;align-items:center;gap:8px;padding:10px 16px;background:#E3F2FD;border-bottom:1px solid #BBDEFB}
+.sb-avatar{width:28px;height:28px;background:linear-gradient(135deg,#1565C0,#42A5F5);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;color:#fff;font-weight:700;flex-shrink:0}
+.sb-username{font-size:12px;font-weight:600;color:#1565C0;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sb-role{font-size:10px;color:#78909C}
+.sb-nav{padding:10px 8px;flex:1}
+.sb-item{display:flex;align-items:center;gap:8px;padding:9px 12px;border-radius:10px;cursor:pointer;font-size:13px;color:#546E7A;transition:all .15s;margin-bottom:3px}
+.sb-item:hover{background:#E3F2FD;color:#1565C0}
+.sb-item.active{background:#E3F2FD;color:#1565C0;font-weight:600}
+.sb-item i{font-size:17px;color:#90A4AE}
+.sb-item.active i{color:#1976D2}
+.sb-item.disabled{opacity:.4;cursor:not-allowed;pointer-events:none}
+.sb-section{font-size:10px;font-weight:600;color:#90CAF9;padding:10px 12px 4px;letter-spacing:.07em;text-transform:uppercase}
+.sb-logout{padding:12px 16px;border-top:1px solid #E3F2FD}
+.logout-btn{width:100%;padding:7px;border:1.5px solid #FFCDD2;border-radius:8px;background:#FFF3F3;color:#C62828;font-size:12px;font-family:'Sarabun',sans-serif;cursor:pointer;font-weight:500;display:flex;align-items:center;justify-content:center;gap:5px;transition:all .15s}
+.logout-btn:hover{background:#FFEBEE}
+.sb-conn{padding:6px 16px 10px;font-size:10px;color:#4CAF50;font-weight:600;display:flex;align-items:center;gap:5px}
+.status-dot{width:7px;height:7px;border-radius:50%;background:#4CAF50;animation:pulse 1.5s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+
+#mainArea{flex:1;overflow-y:auto;max-height:600px}
+.page{display:none;padding:20px}
+.page.active{display:block}
+.page-header{background:linear-gradient(135deg,#1565C0,#42A5F5);border-radius:14px;padding:16px 20px;margin-bottom:16px}
+.page-title{font-size:16px;font-weight:600;color:#fff}
+.page-sub{font-size:12px;color:#BBDEFB;margin-top:3px}
+.card{background:#fff;border:1px solid #BBDEFB;border-radius:14px;padding:18px;margin-bottom:14px;box-shadow:0 2px 8px rgba(21,101,192,.05)}
+.card-title{font-size:13px;font-weight:600;color:#1565C0;margin-bottom:14px;display:flex;align-items:center;gap:7px;border-bottom:1.5px solid #E3F2FD;padding-bottom:10px}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.form-group{display:flex;flex-direction:column;gap:4px}
+label{font-size:12px;color:#5C7A8A;font-weight:600}
+.req{color:#F44336}
+input[type=text],input[type=date],input[type=number],select,textarea{width:100%;padding:8px 11px;border:1.5px solid #BBDEFB;border-radius:8px;font-size:13px;background:#fff;color:#1A237E;font-family:'Sarabun',sans-serif;transition:border-color .15s;outline:none}
+input:focus,select:focus,textarea:focus{border-color:#1976D2;box-shadow:0 0 0 3px rgba(33,150,243,.1)}
+input[readonly]{background:#E3F2FD;color:#1565C0;font-weight:600;border-color:#90CAF9;cursor:default}
+input::placeholder,textarea::placeholder{color:#B0BEC5}
+.eq-header{display:grid;grid-template-columns:2fr 72px 88px 106px 96px 34px;gap:6px;margin-bottom:4px}
+.eq-row{display:grid;grid-template-columns:2fr 72px 88px 106px 96px 34px;gap:6px;align-items:center;margin-bottom:7px}
+.eq-label{font-size:11px;color:#78909C;font-weight:600}
+.grand-total{background:linear-gradient(135deg,#E3F2FD,#BBDEFB);padding:11px 16px;border-radius:10px;font-size:14px;color:#1565C0;font-weight:700;text-align:right;margin-top:10px;border:1px solid #90CAF9}
+.btn{padding:8px 16px;border-radius:8px;border:1.5px solid #BBDEFB;background:#fff;color:#1565C0;cursor:pointer;font-size:12px;font-family:'Sarabun',sans-serif;display:inline-flex;align-items:center;gap:6px;transition:all .15s;font-weight:500}
+.btn:hover{background:#E3F2FD;border-color:#1976D2}
+.btn-primary{background:linear-gradient(135deg,#1565C0,#1976D2);color:#fff;border-color:#1565C0}
+.btn-primary:hover{background:linear-gradient(135deg,#0D47A1,#1565C0);box-shadow:0 4px 12px rgba(21,101,192,.3)}
+.btn-danger{background:#FFF3F3;color:#C62828;border-color:#FFCDD2}
+.btn-danger:hover{background:#FFEBEE}
+.btn-sm{padding:5px 10px;font-size:12px}
+.btn-icon{padding:6px;border-radius:8px;border:1px solid #BBDEFB;background:#F0F7FF;cursor:pointer;color:#78909C;display:flex;align-items:center;justify-content:center;transition:all .15s;font-size:16px}
+.btn-icon:hover{background:#FFEBEE;color:#C62828;border-color:#FFCDD2}
+.action-bar{display:flex;gap:10px;justify-content:flex-end;margin-top:16px;padding-top:16px;border-top:1px solid #E3F2FD}
+.tier-btns{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+.tier-btn{padding:9px 14px;border-radius:10px;border:2px solid #BBDEFB;background:#fff;cursor:pointer;font-size:12px;font-family:'Sarabun',sans-serif;font-weight:600;color:#78909C;transition:all .2s;display:flex;flex-direction:column;align-items:center;gap:2px;min-width:115px}
+.tier-btn span.tl{font-size:10px;font-weight:400;color:#90A4AE;margin-top:1px}
+.tier-btn:hover{border-color:#1976D2;color:#1565C0;background:#E3F2FD}
+.tier-btn.active.t1{background:#E8F5E9;border-color:#4CAF50;color:#1B5E20}
+.tier-btn.active.t2{background:#FFF8E1;border-color:#FFA000;color:#E65100}
+.tier-btn.active.t3{background:#E3F2FD;border-color:#1976D2;color:#0D47A1}
+.comm-block{border:1.5px solid #E3F2FD;border-radius:10px;padding:14px;margin-bottom:12px;background:#FAFCFF}
+.comm-title{font-size:12px;font-weight:600;color:#1565C0;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.member-row{display:grid;grid-template-columns:1fr 1fr 1fr 1fr 20px;gap:6px;align-items:center;margin-bottom:6px}
+.member-num{font-size:10px;color:#90CAF9;font-weight:600;text-align:center}
+.upload-area{border:2px dashed #90CAF9;border-radius:10px;padding:18px;text-align:center;cursor:pointer;transition:all .2s;position:relative;background:#FAFEFF}
+.upload-area:hover{border-color:#1976D2;background:#E3F2FD}
+.upload-area input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.upload-icon{font-size:26px;color:#90CAF9;margin-bottom:4px}
+.upload-files{margin-top:8px;display:flex;flex-wrap:wrap;gap:5px;position:relative;z-index:1;pointer-events:none}
+.file-chip{background:#E3F2FD;border:1px solid #90CAF9;border-radius:20px;padding:3px 10px;font-size:11px;color:#1565C0;display:flex;align-items:center;gap:4px}
+.toast{position:fixed;bottom:20px;right:20px;background:linear-gradient(135deg,#1565C0,#1976D2);color:#fff;padding:11px 18px;border-radius:10px;font-size:13px;z-index:99999;opacity:0;transition:opacity .3s;pointer-events:none;box-shadow:0 4px 16px rgba(21,101,192,.35);max-width:320px}
+.toast.show{opacity:1}
+.toast.error{background:linear-gradient(135deg,#C62828,#E53935)}
+.badge{display:inline-flex;align-items:center;padding:2px 9px;border-radius:20px;font-size:11px;font-weight:600}
+.badge-green{background:#E8F5E9;color:#1B5E20;border:1px solid #A5D6A7}
+.badge-amber{background:#FFF8E1;color:#E65100;border:1px solid #FFCC02}
+.badge-blue{background:#E3F2FD;color:#1565C0;border:1px solid #90CAF9}
+.badge-red{background:#FFEBEE;color:#C62828;border:1px solid #FFCDD2}
+.month-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px}
+.month-tab{padding:5px 14px;border-radius:20px;border:1.5px solid #BBDEFB;font-size:12px;cursor:pointer;background:#fff;font-family:'Sarabun',sans-serif;color:#78909C;transition:all .15s;font-weight:500}
+.month-tab:hover{border-color:#1976D2;color:#1565C0;background:#E3F2FD}
+.month-tab.active{background:linear-gradient(135deg,#1565C0,#1976D2);color:#fff;border-color:#1565C0}
+.record-card{background:#fff;border:1px solid #BBDEFB;border-radius:12px;padding:14px 16px;margin-bottom:10px;border-left:4px solid #42A5F5;transition:box-shadow .15s}
+.record-card:hover{box-shadow:0 4px 16px rgba(21,101,192,.1)}
+.stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px}
+.stat-card{background:#fff;border:1px solid #BBDEFB;border-radius:12px;padding:14px;text-align:center}
+.stat-label{font-size:11px;color:#78909C;margin-bottom:6px;font-weight:500}
+.stat-val{font-size:20px;font-weight:700;color:#1565C0}
+.loading-overlay{display:none;position:fixed;inset:0;background:rgba(21,101,192,.1);z-index:99998;align-items:center;justify-content:center;backdrop-filter:blur(2px)}
+.loading-overlay.show{display:flex}
+.spinner{width:36px;height:36px;border:3px solid #BBDEFB;border-top-color:#1976D2;border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.empty-state{text-align:center;padding:48px 20px;color:#90CAF9}
+.empty-state i{font-size:40px;margin-bottom:10px;display:block}
+.access-denied{text-align:center;padding:60px 20px}
+.access-denied i{font-size:48px;color:#FFCDD2;display:block;margin-bottom:12px}
+.access-denied h3{color:#C62828;font-size:15px;margin-bottom:6px}
+.access-denied p{color:#90A4AE;font-size:12px}
+</style>
+
+<link href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<!-- ═══════════════════════════════════════════
+     LOGIN PAGE
+═══════════════════════════════════════════ -->
+<div id="loginPage">
+  <div class="login-card">
+    <div class="login-logo">
+      <div class="login-logo-icon">
+        <i class="ti ti-building-hospital" style="font-size:30px;color:#fff"></i>
+      </div>
+      <div class="login-title">โรงพยาบาลสอง</div>
+      <div class="login-sub">ระบบบริหารครุภัณฑ์ทางการแพทย์ · จ.แพร่</div>
+    </div>
+    <div class="login-group">
+      <label>ชื่อผู้ใช้ (Username)</label>
+      <input type="text" id="loginUser" placeholder="กรอกชื่อผู้ใช้" autocomplete="username"
+             onkeydown="if(event.key==='Enter')document.getElementById('loginPass').focus()">
+    </div>
+    <div class="login-group">
+      <label>รหัสผ่าน (Password)</label>
+      <input type="password" id="loginPass" placeholder="กรอกรหัสผ่าน" autocomplete="current-password"
+             onkeydown="if(event.key==='Enter')doLogin()">
+    </div>
+    <button class="login-btn" onclick="doLogin()">
+      <i class="ti ti-login" style="margin-right:6px"></i>เข้าสู่ระบบ
+    </button>
+    <div class="login-loading" id="loginLoading">
+      <div class="spinner" style="display:inline-block;margin-right:8px;vertical-align:middle"></div>กำลังตรวจสอบ...
+    </div>
+    <div class="login-err" id="loginErr"></div>
+    <div style="margin-top:16px;padding-top:14px;border-top:1px solid #E3F2FD;font-size:10px;color:#B0BEC5;text-align:center">
+      ข้อมูลล็อกอินอ้างอิงจาก Google Sheets · Sheet "login"
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     APP PAGE
+═══════════════════════════════════════════ -->
+<div id="appPage">
+<div class="app-wrap">
+
+  <!-- SIDEBAR -->
+  <div id="sidebar">
+    <div class="sb-header">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+        <div style="width:28px;height:28px;background:rgba(255,255,255,.2);border-radius:8px;display:flex;align-items:center;justify-content:center">
+          <i class="ti ti-building-hospital" style="font-size:16px;color:#fff"></i>
+        </div>
+        <div><div class="sb-logo">โรงพยาบาลสอง</div><div class="sb-sub">จ.แพร่</div></div>
+      </div>
+      <div style="font-size:10px;color:#BBDEFB;padding-top:7px;border-top:1px solid rgba(255,255,255,.15)">ระบบบริหารครุภัณฑ์ทางการแพทย์</div>
+    </div>
+    <div class="sb-user">
+      <div class="sb-avatar" id="sbAvatar">?</div>
+      <div>
+        <div class="sb-username" id="sbUsername">-</div>
+        <div class="sb-role" id="sbRole">-</div>
+      </div>
+    </div>
+    <nav class="sb-nav">
+      <div class="sb-section">เมนูหลัก</div>
+      <div class="sb-item active" id="navForm" onclick="showPage('form',this)"><i class="ti ti-forms"></i>กรอกข้อมูลครุภัณฑ์</div>
+      <div class="sb-item disabled" id="navHistory" onclick="showPage('history',this)"><i class="ti ti-history"></i>ดูข้อมูลย้อนหลัง</div>
+      <div class="sb-section">ระบบ</div>
+      <div class="sb-item" onclick="showPage('about',this)"><i class="ti ti-info-circle"></i>เกี่ยวกับระบบ</div>
+    </nav>
+    <div class="sb-conn"><span class="status-dot"></span>เชื่อมต่อ Google Sheets</div>
+    <div class="sb-logout">
+      <button class="logout-btn" onclick="doLogout()"><i class="ti ti-logout"></i>ออกจากระบบ</button>
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <div id="mainArea">
+
+    <!-- FORM -->
+    <div class="page active" id="page-form">
+      <div class="page-header">
+        <div class="page-title"><i class="ti ti-stethoscope" style="margin-right:6px"></i>กรอกข้อมูลครุภัณฑ์ทางการแพทย์</div>
+        <div class="page-sub">กรุณากรอกข้อมูลให้ครบถ้วนทุกช่อง ก่อนกดบันทึก</div>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><i class="ti ti-calendar-event"></i>ข้อมูลทั่วไปและผู้ขออนุมัติ</div>
+        <div class="form-grid">
+          <div class="form-group"><label>วันที่ขออนุมัติ <span class="req">*</span></label><input type="date" id="approveDate"></div>
+          <div></div>
+          <div class="form-group"><label>ชื่อ <span class="req">*</span></label><input type="text" id="reqFirstName" placeholder="ชื่อ"></div>
+          <div class="form-group"><label>นามสกุล <span class="req">*</span></label><input type="text" id="reqLastName" placeholder="นามสกุล"></div>
+          <div class="form-group"><label>ตำแหน่ง <span class="req">*</span></label><input type="text" id="reqPosition" placeholder="ตำแหน่งงาน"></div>
+          <div class="form-group"><label>หน่วยงาน <span class="req">*</span></label><input type="text" id="reqDept" placeholder="ชื่อหน่วยงาน"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><i class="ti ti-clipboard-list"></i>รายการครุภัณฑ์ทางการแพทย์</div>
+        <div class="eq-header">
+          <span class="eq-label">ชื่อครุภัณฑ์ <span class="req">*</span></span>
+          <span class="eq-label">จำนวน <span class="req">*</span></span>
+          <span class="eq-label">หน่วยนับ <span class="req">*</span></span>
+          <span class="eq-label">ราคา/หน่วย (บาท) <span class="req">*</span></span>
+          <span class="eq-label">ราคารวม (บาท)</span>
+          <span></span>
+        </div>
+        <div id="eqList"></div>
+        <button class="btn btn-sm" onclick="addEq()" style="margin-top:4px;border-color:#90CAF9;color:#1565C0"><i class="ti ti-plus"></i>เพิ่มรายการ</button>
+        <div class="grand-total">ราคารวมทั้งหมด: <span id="grandTotal">0</span> บาท</div>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><i class="ti ti-users"></i>คณะกรรมการ</div>
+        <div style="font-size:12px;color:#546E7A;margin-bottom:12px">เลือกเงื่อนไขตามมูลค่าครุภัณฑ์ เพื่อกรอกรายชื่อกรรมการ:</div>
+        <div class="tier-btns">
+          <button class="tier-btn t1" id="tierBtn1" onclick="selectTier(1)">
+            <span style="font-size:13px;font-weight:700">1 ท่าน / ส่วน</span>
+            <span class="tl">มูลค่า ≤ 100,000 บาท</span>
+          </button>
+          <button class="tier-btn t2" id="tierBtn2" onclick="selectTier(2)">
+            <span style="font-size:13px;font-weight:700">3 ท่าน / ส่วน</span>
+            <span class="tl">100,001 – 500,000 บาท</span>
+          </button>
+          <button class="tier-btn t3" id="tierBtn3" onclick="selectTier(3)">
+            <span style="font-size:13px;font-weight:700">5 ท่าน / ส่วน</span>
+            <span class="tl">มากกว่า 500,000 บาท</span>
+          </button>
+        </div>
+        <div id="committeeArea" style="display:none"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><i class="ti ti-photo"></i>อัพโหลดรูปภาพ <span class="req">*</span></div>
+        <div class="upload-area">
+          <input type="file" id="imgFiles" multiple accept="image/*" onchange="handleUpload('img',this)">
+          <div class="upload-icon"><i class="ti ti-photo-up"></i></div>
+          <div style="font-size:12px;color:#78909C">คลิกหรือลากไฟล์รูปภาพมาวางที่นี่<br><span style="font-size:10px;color:#B0BEC5">JPG, PNG, GIF</span></div>
+          <div class="upload-files" id="imgChips"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><i class="ti ti-file-certificate"></i>ใบกำหนดคุณลักษณะ <span class="req">*</span></div>
+        <div class="upload-area">
+          <input type="file" id="specFiles" multiple accept=".pdf,.doc,.docx" onchange="handleUpload('spec',this)">
+          <div class="upload-icon"><i class="ti ti-file-upload"></i></div>
+          <div style="font-size:12px;color:#78909C">คลิกหรือลากไฟล์มาวางที่นี่<br><span style="font-size:10px;color:#B0BEC5">PDF, DOC, DOCX</span></div>
+          <div class="upload-files" id="specChips"></div>
+        </div>
+      </div>
+
+      <div class="action-bar">
+        <button class="btn btn-danger" onclick="clearForm()"><i class="ti ti-trash"></i>ลบข้อมูล</button>
+        <button class="btn btn-primary" onclick="saveData()"><i class="ti ti-device-floppy"></i>บันทึกข้อมูล</button>
+      </div>
+    </div>
+
+    <!-- HISTORY (Admin only) -->
+    <div class="page" id="page-history">
+      <div class="page-header">
+        <div class="page-title"><i class="ti ti-history" style="margin-right:6px"></i>ดูข้อมูลย้อนหลัง</div>
+        <div class="page-sub">แสดงข้อมูลครุภัณฑ์ทางการแพทย์ แยกตามเดือน</div>
+      </div>
+      <div id="historyBody"></div>
+    </div>
+
+    <!-- ABOUT -->
+    <div class="page" id="page-about">
+      <div class="page-header">
+        <div class="page-title"><i class="ti ti-info-circle" style="margin-right:6px"></i>เกี่ยวกับระบบ</div>
+        <div class="page-sub">ระบบบริหารจัดการครุภัณฑ์ทางการแพทย์ โรงพยาบาลสอง</div>
+      </div>
+      <div class="card">
+        <div style="font-size:13px;color:#546E7A;line-height:2.2">
+          <p><strong style="color:#1565C0">โรงพยาบาลสอง จ.แพร่</strong> — ระบบบันทึกและติดตามครุภัณฑ์ทางการแพทย์</p>
+          <p><strong>Sheet ID:</strong> <code style="background:#E3F2FD;color:#1565C0;padding:2px 7px;border-radius:5px;font-size:11px">1vYp9ZMNZfVm-t8G07UWWP6vOZyY4YmWw_7qNXN6v-Us</code></p>
+          <p><strong>Sheet ข้อมูล:</strong> Data &nbsp;|&nbsp; <strong>Sheet ผู้ใช้:</strong> login</p>
+          <div style="margin-top:14px;background:#F0F7FF;border-radius:10px;padding:14px;border:1px solid #BBDEFB">
+            <p style="font-weight:600;color:#1565C0;margin-bottom:8px">เกณฑ์จำนวนกรรมการ</p>
+            <p><span class="badge badge-green" style="margin-right:6px">≤ 100,000 บาท</span>กรรมการส่วนละ 1 ท่าน</p>
+            <p style="margin-top:5px"><span class="badge badge-amber" style="margin-right:6px">100,001–500,000 บาท</span>กรรมการส่วนละ 3 ท่าน</p>
+            <p style="margin-top:5px"><span class="badge badge-blue" style="margin-right:6px">> 500,000 บาท</span>กรรมการส่วนละ 5 ท่าน</p>
+          </div>
+          <div style="margin-top:14px;background:#FFF8E1;border-radius:10px;padding:14px;border:1px solid #FFCC02">
+            <p style="font-weight:600;color:#E65100;margin-bottom:6px">สิทธิ์การเข้าถึง</p>
+            <p><span class="badge badge-red" style="margin-right:6px">Admin</span>เข้าถึงได้ทุกเมนู รวมถึงดูข้อมูลย้อนหลัง</p>
+            <p style="margin-top:5px"><span class="badge badge-blue" style="margin-right:6px">User</span>กรอกข้อมูลครุภัณฑ์ได้เท่านั้น</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<div class="loading-overlay" id="loadingOverlay"><div class="spinner"></div></div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ════════════════════════════════════════════
+   CONSTANTS
+════════════════════════════════════════════ */
+const SHEET_ID   = '1vYp9ZMNZfVm-t8G07UWWP6vOZyY4YmWw_7qNXN6v-Us';
+const GAS_URL    = 'https://script.google.com/macros/s/AKfycbzK6rF4eTMZe5Yq7b2XQkPO-yqLFlhzef3i_wJ9Qmgn-4CGPq7zkBP9hrVwGx5SOJ7L/exec';
+const MONTHS_TH  = ['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
+const COMM_TYPES = ['ผู้ขออนุมัติ','กรรมการกำหนดสเปค','กรรมการตรวจรับ'];
+const COMM_ICONS = ['ti-user-check','ti-settings','ti-clipboard-check'];
+const UNIT_OPTS  = ['เครื่อง','ชุด','ชิ้น','อัน','แผ่น','กล่อง','ถุง','หลอด','ขวด','ฝา'];
+const TIER_COUNT = {1:1, 2:3, 3:5};
+
+/* ════════════════════════════════════════════
+   STATE
+════════════════════════════════════════════ */
+let currentUser = null;   // { username, role, name }
+let eqList      = [];
+let imgNames    = [], specNames = [];
+let records     = [];
+let selectedTier = 0;
+
+/* ════════════════════════════════════════════
+   LOGIN
+════════════════════════════════════════════ */
+async function doLogin() {
+  const user = document.getElementById('loginUser').value.trim();
+  const pass = document.getElementById('loginPass').value.trim();
+  if (!user || !pass) { showLoginErr('กรุณากรอกชื่อผู้ใช้และรหัสผ่าน'); return; }
+
+  document.getElementById('loginLoading').style.display = 'block';
+  document.getElementById('loginErr').style.display = 'none';
+
+  try {
+    // Fetch login sheet via GAS (GET with action=login)
+    const url = `${GAS_URL}?action=login&sheetId=${SHEET_ID}&username=${encodeURIComponent(user)}&password=${encodeURIComponent(pass)}`;
+    const res  = await fetch(url);
+    const data = await res.json();
+
+    if (data.success) {
+      currentUser = { username: data.username, role: data.role, name: data.name || data.username };
+      document.getElementById('loginPage').style.display = 'none';
+      document.getElementById('appPage').style.display   = 'block';
+      setupSidebar();
+      addEq();
+    } else {
+      showLoginErr(data.message || 'ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง');
+    }
+  } catch (err) {
+    // ถ้า GAS ยังไม่รองรับ login → fallback demo
+    fallbackLogin(user, pass);
+  }
+
+  document.getElementById('loginLoading').style.display = 'none';
+}
+
+function fallbackLogin(user, pass) {
+  // Demo users (ใช้ชั่วคราวจนกว่า GAS จะรองรับ action=login)
+  const DEMO = [
+    { username:'admin',  password:'admin123',  role:'Admin', name:'ผู้ดูแลระบบ' },
+    { username:'user1',  password:'user1234',  role:'User',  name:'เจ้าหน้าที่ 1' },
+    { username:'nurse1', password:'nurse1234', role:'User',  name:'พยาบาล 1' },
+  ];
+  const found = DEMO.find(u => u.username === user && u.password === pass);
+  if (found) {
+    currentUser = { username: found.username, role: found.role, name: found.name };
+    document.getElementById('loginPage').style.display = 'none';
+    document.getElementById('appPage').style.display   = 'block';
+    setupSidebar();
+    addEq();
+  } else {
+    showLoginErr('ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง');
+  }
+}
+
+function showLoginErr(msg) {
+  const el = document.getElementById('loginErr');
+  el.textContent = msg;
+  el.style.display = 'block';
+}
+
+function setupSidebar() {
+  document.getElementById('sbAvatar').textContent   = (currentUser.name || '?')[0].toUpperCase();
+  document.getElementById('sbUsername').textContent = currentUser.name;
+  document.getElementById('sbRole').textContent     = currentUser.role;
+
+  const navHistory = document.getElementById('navHistory');
+  if (currentUser.role === 'Admin') {
+    navHistory.classList.remove('disabled');
+  } else {
+    navHistory.classList.add('disabled');
+  }
+}
+
+function doLogout() {
+  if (!confirm('ต้องการออกจากระบบใช่หรือไม่?')) return;
+  currentUser = null;
+  document.getElementById('appPage').style.display   = 'none';
+  document.getElementById('loginPage').style.display = 'flex';
+  document.getElementById('loginUser').value = '';
+  document.getElementById('loginPass').value = '';
+  document.getElementById('loginErr').style.display  = 'none';
+  clearForm(true);
+  records = [];
+}
+
+/* ════════════════════════════════════════════
+   NAVIGATION
+════════════════════════════════════════════ */
+function showPage(name, el) {
+  // Guard history for non-admin
+  if (name === 'history' && currentUser?.role !== 'Admin') {
+    toast('คุณไม่มีสิทธิ์เข้าถึงหน้านี้ (เฉพาะ Admin)', 'error');
+    return;
+  }
+  document.querySelectorAll('#mainArea .page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.sb-item').forEach(i => i.classList.remove('active'));
+  document.getElementById('page-' + name).classList.add('active');
+  if (el) el.classList.add('active');
+  if (name === 'history') loadHistory();
+}
+
+/* ════════════════════════════════════════════
+   EQUIPMENT ROWS
+════════════════════════════════════════════ */
+function addEq() {
+  eqList.push({ id: Date.now(), name:'', qty:'', unit:'เครื่อง', price:'', total:0 });
+  renderEq();
+}
+
+function removeEq(id) {
+  eqList = eqList.filter(e => e.id !== id);
+  renderEq();
+  calcGrand();
+}
+
+function renderEq() {
+  document.getElementById('eqList').innerHTML = eqList.map(e => `
+    <div class="eq-row" id="eqrow-${e.id}">
+      <input type="text"   placeholder="ชื่อครุภัณฑ์" value="${esc(e.name)}"
+             oninput="setEqF(${e.id},'name',this.value)">
+      <input type="number" placeholder="0" value="${e.qty}" min="1" step="1"
+             oninput="setEqN(${e.id},'qty',this.value)">
+      <select onchange="setEqF(${e.id},'unit',this.value)">
+        ${UNIT_OPTS.map(u=>`<option${u===e.unit?' selected':''}>${u}</option>`).join('')}
+      </select>
+      <input type="number" placeholder="0.00" value="${e.price}" min="0" step="0.01"
+             oninput="setEqN(${e.id},'price',this.value)">
+      <input type="text" readonly id="rt-${e.id}" value="${fmt(e.total)}">
+      <button class="btn-icon" onclick="removeEq(${e.id})"><i class="ti ti-trash"></i></button>
+    </div>`).join('');
+  calcGrand();
+}
+
+function setEqF(id, f, v) { const e=eqList.find(x=>x.id===id); if(e) e[f]=v; }
+function setEqN(id, f, v) {
+  const e = eqList.find(x => x.id === id);
+  if (!e) return;
+  e[f] = v === '' ? '' : parseFloat(v) || 0;
+  const qty   = parseFloat(e.qty)   || 0;
+  const price = parseFloat(e.price) || 0;
+  e.total = qty * price;
+  const el = document.getElementById('rt-' + id);
+  if (el) el.value = fmt(e.total);
+  calcGrand();
+}
+
+function calcGrand() {
+  const g = eqList.reduce((s,e) => s + (parseFloat(e.total)||0), 0);
+  document.getElementById('grandTotal').textContent = fmt(g);
+  return g;
+}
+
+/* ════════════════════════════════════════════
+   COMMITTEE
+════════════════════════════════════════════ */
+function selectTier(tier) {
+  selectedTier = tier;
+  [1,2,3].forEach(t => document.getElementById('tierBtn'+t).classList.remove('active'));
+  document.getElementById('tierBtn' + tier).classList.add('active');
+  renderCommittee();
+  document.getElementById('committeeArea').style.display = 'block';
+}
+
+function renderCommittee() {
+  const cnt  = TIER_COUNT[selectedTier] || 1;
+  const area = document.getElementById('committeeArea');
+  area.innerHTML = COMM_TYPES.map((type, ti) => {
+    let rows = '';
+    for (let i = 0; i < cnt; i++) {
+      rows += `<div class="member-row">
+        <input type="text" placeholder="ชื่อ"      id="cm_${ti}_${i}_fn">
+        <input type="text" placeholder="นามสกุล"   id="cm_${ti}_${i}_ln">
+        <input type="text" placeholder="ตำแหน่ง"  id="cm_${ti}_${i}_pos">
+        <input type="text" placeholder="หน่วยงาน" id="cm_${ti}_${i}_dept">
+        <div class="member-num">${i+1}</div>
+      </div>`;
+    }
+    return `<div class="comm-block">
+      <div class="comm-title"><i class="ti ${COMM_ICONS[ti]}"></i>${type}</div>${rows}
+    </div>`;
+  }).join('');
+}
+
+function getCommData() {
+  if (!selectedTier) return {};
+  const cnt  = TIER_COUNT[selectedTier];
+  const data = {};
+  COMM_TYPES.forEach((type, ti) => {
+    data[type] = [];
+    for (let i = 0; i < cnt; i++) {
+      data[type].push({
+        firstName : (document.getElementById(`cm_${ti}_${i}_fn`)   ||{}).value||'',
+        lastName  : (document.getElementById(`cm_${ti}_${i}_ln`)   ||{}).value||'',
+        position  : (document.getElementById(`cm_${ti}_${i}_pos`)  ||{}).value||'',
+        dept      : (document.getElementById(`cm_${ti}_${i}_dept`) ||{}).value||''
+      });
+    }
+  });
+  return data;
+}
+
+/* ════════════════════════════════════════════
+   FILE UPLOAD
+════════════════════════════════════════════ */
+function handleUpload(type, input) {
+  const names = Array.from(input.files).map(f => f.name);
+  if (type === 'img') { imgNames = names; document.getElementById('imgChips').innerHTML = chips(names); }
+  else                { specNames = names; document.getElementById('specChips').innerHTML = chips(names); }
+}
+function chips(names) {
+  return names.map(n => `<span class="file-chip"><i class="ti ti-file" style="font-size:12px"></i>${esc(n)}</span>`).join('');
+}
+
+/* ════════════════════════════════════════════
+   VALIDATION
+════════════════════════════════════════════ */
+function validate() {
+  const req = [
+    ['approveDate','วันที่ขออนุมัติ'],['reqFirstName','ชื่อผู้ขออนุมัติ'],
+    ['reqLastName','นามสกุล'],['reqPosition','ตำแหน่ง'],['reqDept','หน่วยงาน'],
+  ];
+  for (const [id, label] of req) {
+    if (!document.getElementById(id).value.trim()) { toast('กรุณากรอก: '+label,'error'); return false; }
+  }
+  if (eqList.length === 0) { toast('กรุณาเพิ่มรายการครุภัณฑ์อย่างน้อย 1 รายการ','error'); return false; }
+  for (const e of eqList) {
+    if (!String(e.name).trim())   { toast('กรุณากรอกชื่อครุภัณฑ์ทุกรายการ','error'); return false; }
+    if (!e.qty || parseFloat(e.qty) <= 0)  { toast('กรุณากรอกจำนวนที่ถูกต้อง','error'); return false; }
+    if (e.price === '' || parseFloat(e.price) < 0) { toast('กรุณากรอกราคาที่ถูกต้อง','error'); return false; }
+  }
+  if (!selectedTier) { toast('กรุณาเลือกเงื่อนไขจำนวนกรรมการ','error'); return false; }
+  const cd = getCommData();
+  for (const [type, members] of Object.entries(cd)) {
+    for (const m of members) {
+      if (!m.firstName||!m.lastName||!m.position||!m.dept) {
+        toast(`กรุณากรอกข้อมูลกรรมการ "${type}" ให้ครบ`,'error'); return false;
+      }
+    }
+  }
+  if (imgNames.length === 0)  { toast('กรุณาอัพโหลดรูปภาพ','error'); return false; }
+  if (specNames.length === 0) { toast('กรุณาอัพโหลดใบกำหนดคุณลักษณะ','error'); return false; }
+  return true;
+}
+
+/* ════════════════════════════════════════════
+   SAVE
+════════════════════════════════════════════ */
+async function saveData() {
+  if (!validate()) return;
+  const grandTotal = calcGrand();
+  const record = {
+    id          : Date.now(),
+    approveDate : document.getElementById('approveDate').value,
+    savedBy     : currentUser?.username || '',
+    requester   : {
+      firstName : document.getElementById('reqFirstName').value.trim(),
+      lastName  : document.getElementById('reqLastName').value.trim(),
+      position  : document.getElementById('reqPosition').value.trim(),
+      dept      : document.getElementById('reqDept').value.trim(),
+    },
+    equipment   : eqList.map(e=>({...e})),
+    grandTotal,
+    tier        : selectedTier,
+    committee   : getCommData(),
+    images      : [...imgNames],
+    specs       : [...specNames],
+    createdAt   : new Date().toISOString(),
+  };
+
+  setLoading(true);
+  try {
+    await saveLocal(record);
+    await sendToSheet(record);
+    records.push(record);
+    toast('บันทึกข้อมูลและส่ง Google Sheets เรียบร้อย ✓');
+    clearForm(true);
+  } catch(err) {
+    toast('บันทึกเรียบร้อย (GAS อาจล่าช้า): '+err.message,'error');
+  }
+  setLoading(false);
+}
+
+async function saveLocal(record) {
+  let arr = [];
+  try { const s = await window.storage.get('med_records'); arr = s ? JSON.parse(s.value) : []; } catch(_){}
+  arr.push(record);
+  await window.storage.set('med_records', JSON.stringify(arr));
+}
+
+async function sendToSheet(record) {
+  // Build rows array for Sheet "Data"
+  const comm    = record.committee;
+  const commStr = (key) => (comm[key]||[]).map(m=>`${m.firstName} ${m.lastName} (${m.position} / ${m.dept})`).join(' | ');
+
+  const rows = record.equipment.map(eq => [
+    record.approveDate,                                    // A วันที่ขออนุมัติ
+    record.requester.firstName+' '+record.requester.lastName, // B ผู้ขออนุมัติ
+    record.requester.position,                             // C ตำแหน่ง
+    record.requester.dept,                                 // D หน่วยงาน
+    eq.name,                                               // E ครุภัณฑ์
+    parseFloat(eq.qty)||0,                                 // F จำนวน
+    eq.unit,                                               // G หน่วยนับ
+    parseFloat(eq.price)||0,                               // H ราคา/หน่วย
+    parseFloat(eq.total)||0,                               // I ราคารวม
+    record.grandTotal,                                     // J มูลค่ารวมทั้งหมด
+    record.images.join(', '),                              // K รูปภาพ
+    record.specs.join(', '),                               // L ใบกำหนดคุณลักษณะ
+    commStr('ผู้ขออนุมัติ'),                              // M ผู้ขออนุมัติ(กรรมการ)
+    commStr('กรรมการกำหนดสเปค'),                         // N กรรมการกำหนดสเปค
+    commStr('กรรมการตรวจรับ'),                            // O กรรมการตรวจรับ
+    record.savedBy,                                        // P บันทึกโดย
+    record.createdAt,                                      // Q วันที่บันทึก
+  ]);
+
+  const payload = JSON.stringify({
+    action  : 'appendData',
+    sheetId : SHEET_ID,
+    sheetName: 'Data',
+    rows,
+  });
+
+  await fetch(GAS_URL, {
+    method : 'POST',
+    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+    body   : payload,
+    mode   : 'no-cors',
+  });
+}
+
+/* ════════════════════════════════════════════
+   CLEAR FORM
+════════════════════════════════════════════ */
+function clearForm(afterSave = false) {
+  if (!afterSave && !confirm('ต้องการล้างข้อมูลทั้งหมดในฟอร์มใช่หรือไม่?')) return;
+  ['approveDate','reqFirstName','reqLastName','reqPosition','reqDept']
+    .forEach(id => { const el = document.getElementById(id); if(el) el.value=''; });
+  eqList = []; imgNames = []; specNames = []; selectedTier = 0;
+  renderEq();
+  ['imgChips','specChips'].forEach(id => { const el=document.getElementById(id); if(el) el.innerHTML=''; });
+  ['imgFiles','specFiles'].forEach(id => { const el=document.getElementById(id); if(el) el.value=''; });
+  const ca = document.getElementById('committeeArea');
+  if (ca) { ca.style.display='none'; ca.innerHTML=''; }
+  [1,2,3].forEach(t => { const b=document.getElementById('tierBtn'+t); if(b) b.classList.remove('active'); });
+  if (!afterSave) toast('ล้างข้อมูลเรียบร้อย');
+}
+
+/* ════════════════════════════════════════════
+   HISTORY (Admin only)
+════════════════════════════════════════════ */
+async function loadHistory() {
+  const body = document.getElementById('historyBody');
+
+  if (currentUser?.role !== 'Admin') {
+    body.innerHTML = `<div class="access-denied">
+      <i class="ti ti-lock"></i>
+      <h3>ไม่มีสิทธิ์เข้าถึง</h3>
+      <p>หน้านี้สำหรับ Admin เท่านั้น</p>
+    </div>`;
+    return;
+  }
+
+  setLoading(true);
+  try {
+    const s = await window.storage.get('med_records');
+    records = s ? JSON.parse(s.value) : [];
+  } catch(_) { records = []; }
+  setLoading(false);
+  renderHistory(null);
+}
+
+function renderHistory(filterMonth) {
+  const body   = document.getElementById('historyBody');
+  const now    = new Date();
+  const mMap   = {};
+  records.forEach(r => {
+    const d   = new Date(r.approveDate || r.createdAt);
+    const key = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+    if (!mMap[key]) mMap[key] = { label: MONTHS_TH[d.getMonth()]+' '+(d.getFullYear()+543), records:[] };
+    mMap[key].records.push(r);
+  });
+  const keys    = Object.keys(mMap).sort().reverse();
+  const thisKey = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
+  const total   = records.reduce((s,r)=>s+(r.grandTotal||0),0);
+
+  const stats = `<div class="stat-row">
+    <div class="stat-card"><div class="stat-label">รายการทั้งหมด</div><div class="stat-val">${records.length}</div></div>
+    <div class="stat-card"><div class="stat-label">เดือนนี้</div><div class="stat-val">${(mMap[thisKey]?.records.length)||0}</div></div>
+    <div class="stat-card"><div class="stat-label" style="font-size:10px">มูลค่ารวม (บาท)</div><div class="stat-val" style="font-size:14px">${fmt(total)}</div></div>
+  </div>`;
+
+  const tabs = `<div class="month-tabs">
+    <button class="month-tab${!filterMonth?' active':''}" onclick="renderHistory(null)">ทั้งหมด</button>
+    ${keys.map(k=>`<button class="month-tab${filterMonth===k?' active':''}" onclick="renderHistory('${k}')">${mMap[k].label}</button>`).join('')}
+  </div>`;
+
+  const filtered = filterMonth ? (mMap[filterMonth]?.records||[]) : [...records].reverse();
+  const cards = filtered.length === 0
+    ? `<div class="empty-state"><i class="ti ti-inbox"></i><p>ยังไม่มีข้อมูลในช่วงเวลานี้</p></div>`
+    : filtered.map(r => {
+        const d = new Date(r.approveDate || r.createdAt);
+        const ds = `${d.getDate()} ${MONTHS_TH[d.getMonth()]} ${d.getFullYear()+543}`;
+        const eqH = r.equipment.map(e =>
+          `<span style="display:inline-block;margin:2px 5px 2px 0;font-size:11px;background:#E3F2FD;color:#1565C0;padding:2px 8px;border-radius:20px">
+            • ${esc(e.name)} (${fmt(e.qty)} ${esc(e.unit)} × ${fmt(e.price)} = ${fmt(e.total)} บาท)
+          </span>`).join('');
+        return `<div class="record-card">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start">
+            <div>
+              <div style="font-size:13px;font-weight:600;color:#1A237E">${esc(r.requester?.firstName)} ${esc(r.requester?.lastName)}</div>
+              <div style="font-size:11px;color:#78909C;margin-top:2px">${esc(r.requester?.position)} · ${esc(r.requester?.dept)}</div>
+              ${r.savedBy?`<div style="font-size:10px;color:#90CAF9;margin-top:2px"><i class="ti ti-user" style="font-size:10px"></i> บันทึกโดย: ${esc(r.savedBy)}</div>`:''}
+            </div>
+            <div style="text-align:right">
+              <div style="font-size:14px;font-weight:700;color:#1565C0">${fmt(r.grandTotal)} บาท</div>
+              <div style="font-size:11px;color:#90A4AE;margin-top:2px">${ds}</div>
+            </div>
+          </div>
+          <div style="margin-top:10px;padding-top:10px;border-top:1px solid #E3F2FD">${eqH}</div>
+        </div>`;
+      }).join('');
+
+  body.innerHTML = stats + tabs + cards;
+}
+
+/* ════════════════════════════════════════════
+   HELPERS
+════════════════════════════════════════════ */
+function fmt(n) {
+  const v = parseFloat(n)||0;
+  return v%1===0 ? v.toLocaleString('th-TH') : v.toLocaleString('th-TH',{minimumFractionDigits:2,maximumFractionDigits:2});
+}
+function esc(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function toast(msg, type='success') {
+  const el = document.getElementById('toast');
+  el.textContent = msg; el.className = 'toast'+(type==='error'?' error':'');
+  setTimeout(()=>el.classList.add('show'),10);
+  setTimeout(()=>el.classList.remove('show'),3500);
+}
+function setLoading(v) {
+  document.getElementById('loadingOverlay').className = 'loading-overlay'+(v?' show':'');
+}
+</script>
